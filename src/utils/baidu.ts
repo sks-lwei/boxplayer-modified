@@ -1,7 +1,7 @@
 import { ITokenInfo } from '../user/userstore'
 import UserDAL from '../user/userdal'
 import message from './message'
-import { BAIDU_APP_ID, BAIDU_APP_SECRET } from '../secrets.generated'
+import { getSecret } from './secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
 const BAIDU_AUTH_URL = 'https://openapi.baidu.com/oauth/2.0/authorize'
@@ -73,7 +73,7 @@ const normalizeToken = (data: any, fallbackRefreshToken = ''): ITokenInfo | null
 export const buildBaiduAuthUrl = () => {
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: BAIDU_APP_ID,
+    client_id: getSecret('BAIDU_APP_ID'),
     redirect_uri: BAIDU_REDIRECT_URL,
     scope: BAIDU_SCOPE,
     state: `boxplayer_${Date.now()}`,
@@ -123,8 +123,8 @@ export const exchangeBaiduCodeForToken = async (code: string): Promise<ITokenInf
   const params = new URLSearchParams({
     grant_type: 'authorization_code',
     code,
-    client_id: BAIDU_APP_ID,
-    client_secret: BAIDU_APP_SECRET,
+    client_id: getSecret('BAIDU_APP_ID'),
+    client_secret: getSecret('BAIDU_APP_SECRET'),
     redirect_uri: BAIDU_REDIRECT_URL
   })
   const url = `${BAIDU_TOKEN_URL}?${params.toString()}`
@@ -174,8 +174,8 @@ const refreshBaiduAccessTokenInternal = async (refreshToken: string): Promise<IT
   const params = new URLSearchParams({
     grant_type: 'refresh_token',
     refresh_token: refreshToken,
-    client_id: BAIDU_APP_ID,
-    client_secret: BAIDU_APP_SECRET
+    client_id: getSecret('BAIDU_APP_ID'),
+    client_secret: getSecret('BAIDU_APP_SECRET')
   })
   const url = `${BAIDU_TOKEN_URL}?${params.toString()}`
   const resp = await fetch(url, {

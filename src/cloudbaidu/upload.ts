@@ -3,7 +3,7 @@ import nodehttps from 'https'
 import type { ClientRequest } from 'http'
 import path from 'path'
 import { FileHandle } from 'fs/promises'
-import { BAIDU_PCS_APP_ID } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { getBaiduToken } from './auth'
 
 const BAIDU_API_HOST = 'https://pan.baidu.com'
@@ -125,7 +125,7 @@ export const apiBaiduLocateUpload = async (
   const url = new URL('/rest/2.0/pcs/file', BAIDU_PCS_HOST)
   url.searchParams.set('method', 'locateupload')
   url.searchParams.set('access_token', token.access_token)
-  url.searchParams.set('appid', BAIDU_PCS_APP_ID)
+  url.searchParams.set('appid', getSecret('BAIDU_PCS_APP_ID'))
   url.searchParams.set('path', filePath)
   url.searchParams.set('uploadid', uploadid)
   url.searchParams.set('upload_version', '2.0')

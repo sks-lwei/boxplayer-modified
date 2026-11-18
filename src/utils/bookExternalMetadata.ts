@@ -1,6 +1,6 @@
 import type { IBookItem } from '../types/book'
 import { runRateLimitedScanRequest } from './libraryScanRateLimiter'
-import { GOOGLE_BOOKS_API_TOKEN } from '../secrets.generated'
+import { getSecret } from './secrets'
 
 export interface ExternalBookMetadata {
   title?: string
@@ -58,7 +58,7 @@ function firstText(value: string | string[] | undefined): string {
 }
 
 function buildGoogleBooksSearchUrl(book: IBookItem): string {
-  const params = new URLSearchParams({ maxResults: '5', projection: 'full', key: GOOGLE_BOOKS_API_TOKEN })
+  const params = new URLSearchParams({ maxResults: '5', projection: 'full', key: getSecret('GOOGLE_BOOKS_API_TOKEN') })
   const isbn = String(book.isbn || '').replace(/[^0-9Xx]/g, '')
   if (/^(?:97[89]\d{10}|\d{9}[\dX])$/i.test(isbn)) params.set('q', `isbn:${isbn}`)
   else {
@@ -123,7 +123,7 @@ export function canHydrateExternalBookMetadata(book: IBookItem): boolean {
 
 export async function lookupExternalBookMetadataResult(book: IBookItem, request: typeof fetch = fetch, log?: ExternalBookMetadataLogger): Promise<ExternalBookMetadataLookupResult> {
   const logPrefix = `[book-metadata] ${book.ext.toUpperCase()} ${book.file_name}`
-  if (!GOOGLE_BOOKS_API_TOKEN) {
+  if (!getSecret('GOOGLE_BOOKS_API_TOKEN')) {
     log?.(`${logPrefix} 未配置 GOOGLE_BOOKS_API_TOKEN，跳过 Google Books 查询`)
     return { status: 'unavailable' }
   }

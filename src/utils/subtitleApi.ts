@@ -1,4 +1,4 @@
-import { SUBTITLE_DOWNLOAD_API_KEY, SUBTITLE_SEARCH_API_KEY } from '../secrets.generated'
+import { getSecret } from './secrets'
 
 export interface SubtitleSearchResult {
   id: string
@@ -18,8 +18,8 @@ export interface SubtitleDownloadResult {
 
 type FetchLike = typeof fetch
 
-const SEARCH_API_KEY = SUBTITLE_SEARCH_API_KEY
-const DOWNLOAD_API_KEY = SUBTITLE_DOWNLOAD_API_KEY
+const SEARCH_API_KEY = () => getSecret('SUBTITLE_SEARCH_API_KEY')
+const DOWNLOAD_API_KEY = () => getSecret('SUBTITLE_DOWNLOAD_API_KEY')
 const OPEN_SUBTITLES_API = 'https://api.opensubtitles.com/api/v1'
 
 async function readJson<T>(response: Response): Promise<T> {
@@ -43,7 +43,7 @@ export async function searchSubtitles(query: string, language: string, fetcher: 
   if (!query.trim()) return []
   const response = await fetcher(buildSubtitleSearchUrl(query, language), {
     headers: {
-      'Api-Key': SEARCH_API_KEY
+      'Api-Key': SEARCH_API_KEY()
     }
   })
   const data = await readJson<any>(response as Response)
@@ -73,7 +73,7 @@ export async function getSubtitleDownload(fileId: number, fetcher: FetchLike = f
   const response = await fetcher(`${OPEN_SUBTITLES_API}/download`, {
     method: 'POST',
     headers: {
-      'Api-Key': DOWNLOAD_API_KEY,
+      'Api-Key': DOWNLOAD_API_KEY(),
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({

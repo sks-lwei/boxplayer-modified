@@ -1,10 +1,11 @@
 import type { ITokenInfo } from '../user/userstore'
 import { humanSize } from '../utils/format'
 import message from '../utils/message'
-import { BOX_CLIENT_ID, BOX_CLIENT_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { BOX_CLIENT_ID, BOX_CLIENT_SECRET }
+export const BOX_CLIENT_ID = getSecret('BOX_CLIENT_ID')
+export const BOX_CLIENT_SECRET = getSecret('BOX_CLIENT_SECRET')
 
 const BOX_AUTH_URL = 'https://account.box.com/api/oauth2/authorize'
 const BOX_TOKEN_URL = 'https://api.box.com/oauth2/token'
@@ -159,7 +160,7 @@ export const exchangeBoxCodeForToken = async (
     redirect_uri: BOX_DEFAULT_REDIRECT_URL,
     code_verifier: verifier
   })
-  if (BOX_CLIENT_SECRET.trim()) body.set('client_secret', BOX_CLIENT_SECRET.trim())
+  if (getSecret('BOX_CLIENT_SECRET').trim()) body.set('client_secret', getSecret('BOX_CLIENT_SECRET').trim())
   const data = await boxJson<any>(BOX_TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -177,14 +178,14 @@ export const exchangeBoxCodeForToken = async (
 export const refreshBoxAccessToken = async (token: ITokenInfo): Promise<ITokenInfo | null> => {
   const key = tokenRefreshKey('box', token.user_id || token.device_id || token.refresh_token)
   return withTokenRefreshLock(key, async () => {
-    const clientId = token.device_id || BOX_CLIENT_ID
+    const clientId = token.device_id || getSecret('BOX_CLIENT_ID')
     if (!clientId || !token.refresh_token) return null
     const body = new URLSearchParams({
       grant_type: 'refresh_token',
       refresh_token: token.refresh_token,
       client_id: clientId
     })
-    if (BOX_CLIENT_SECRET.trim()) body.set('client_secret', BOX_CLIENT_SECRET.trim())
+    if (getSecret('BOX_CLIENT_SECRET').trim()) body.set('client_secret', getSecret('BOX_CLIENT_SECRET').trim())
     const data = await boxJson<any>(BOX_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

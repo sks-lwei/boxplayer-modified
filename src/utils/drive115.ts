@@ -1,8 +1,9 @@
 import { ITokenInfo } from '../user/userstore'
-import { DRIVE115_APP_ID, DRIVE115_APP_SECRET } from '../secrets.generated'
+import { getSecret } from './secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { DRIVE115_APP_ID, DRIVE115_APP_SECRET }
+export const DRIVE115_APP_ID = getSecret('DRIVE115_APP_ID')
+export const DRIVE115_APP_SECRET = getSecret('DRIVE115_APP_SECRET')
 
 const DRIVE115_AUTH_DEVICE_URL = 'https://passportapi.115.com/open/authDeviceCode'
 const DRIVE115_QR_STATUS_URL = 'https://qrcodeapi.115.com/get/status/'
@@ -43,7 +44,7 @@ export const buildQrImageUrl = (content: string) => {
 }
 
 export const requestDeviceCode = async (clientId: string, codeChallenge: string, method = 'sha256') => {
-  const effectiveClientId = (clientId || '').trim() || DRIVE115_APP_ID
+  const effectiveClientId = (clientId || '').trim() || getSecret('DRIVE115_APP_ID')
   const body = new URLSearchParams({
     client_id: effectiveClientId,
     code_challenge: codeChallenge,
@@ -100,8 +101,8 @@ export const exchangeDeviceCode = async (uid: string, codeVerifier: string) => {
 
 const refresh115AccessTokenInternal = async (refreshToken: string) => {
   const body = new URLSearchParams({ refresh_token: refreshToken })
-  if (DRIVE115_APP_ID) body.set('client_id', DRIVE115_APP_ID)
-  if (DRIVE115_APP_SECRET) body.set('client_secret', DRIVE115_APP_SECRET)
+  if (getSecret('DRIVE115_APP_ID')) body.set('client_id', getSecret('DRIVE115_APP_ID'))
+  if (getSecret('DRIVE115_APP_SECRET')) body.set('client_secret', getSecret('DRIVE115_APP_SECRET'))
   const resp = await fetch(DRIVE115_REFRESH_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

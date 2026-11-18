@@ -120,17 +120,6 @@ body {
 }
 
 body {
-    --arcoblue-1: 232, 240, 255 !important;
-    --arcoblue-2: 205, 220, 255 !important;
-    --arcoblue-3: 179, 199, 255 !important;
-    --arcoblue-4: 152, 176, 255 !important;
-    --arcoblue-5: 126, 151, 255 !important;
-    --arcoblue-6: 99, 125, 255 !important;
-    --arcoblue-7: 61, 81, 210 !important;
-    --arcoblue-8: 32, 46, 166 !important;
-    --arcoblue-9: 12, 19, 121 !important;
-    --arcoblue-10: 0, 3, 77 !important;
-
     --foot-bg: #3c86f5;
     --foot-txt: rgb(245, 245, 246);
     --topshadow: rgba(0, 0, 0, 0.1);

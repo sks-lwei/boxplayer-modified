@@ -8,7 +8,7 @@ import { IAliUserDriveCapacity, IAliUserDriveDetails } from './models'
 import { GetSignature } from './utils'
 import getUuid from 'uuid-by-string'
 import { useSettingStore } from '../store'
-import { ALIYUN_APP_ID, ALIYUN_APP_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 
 export const TokenReTimeMap = new Map<string, number>()
 export const TokenLockMap = new Map<string, number>()
@@ -144,8 +144,8 @@ export default class AliUser {
     const postData = {
       refresh_token: token.open_api_refresh_token,
       grant_type: 'refresh_token',
-      client_id: ALIYUN_APP_ID,
-      client_secret: ALIYUN_APP_SECRET
+      client_id: getSecret('ALIYUN_APP_ID'),
+      client_secret: getSecret('ALIYUN_APP_SECRET')
     }
     const resp = await AliHttp.Post(url, postData, '', '')
     OpenApiTokenLockMap.delete(token.user_id)

@@ -1,9 +1,9 @@
 import type { ITokenInfo } from '../user/userstore'
-import { GUANGYA_CLIENT_ID } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { humanSize } from '../utils/format'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { GUANGYA_CLIENT_ID }
+export const GUANGYA_CLIENT_ID = getSecret('GUANGYA_CLIENT_ID')
 
 export const GUANGYA_WEB_URL = 'https://www.guangyapan.com'
 export const GUANGYA_ACCOUNT_URL = 'https://account.guangyapan.com'
@@ -59,7 +59,7 @@ export const guangyaAccountHeaders = (deviceId: string) => ({
   origin: GUANGYA_WEB_URL,
   referer: `${GUANGYA_WEB_URL}/`,
   'user-agent': GUANGYA_USER_AGENT,
-  'x-client-id': GUANGYA_CLIENT_ID,
+  'x-client-id': getSecret('GUANGYA_CLIENT_ID'),
   'x-client-version': '0.0.1',
   'x-device-id': deviceId,
   'x-device-model': 'chrome%2F147.0.0.0',
@@ -100,7 +100,7 @@ export const requestGuangyaSmsCode = async (phoneNumber: string, deviceId = gene
     method: 'POST',
     headers: guangyaAccountHeaders(deviceId),
     body: JSON.stringify({
-      client_id: GUANGYA_CLIENT_ID,
+      client_id: getSecret('GUANGYA_CLIENT_ID'),
       action: 'POST:/v1/auth/verification',
       device_id: deviceId,
       meta: { phone_number: normalizedPhoneNumber }
@@ -122,7 +122,7 @@ export const requestGuangyaSmsCode = async (phoneNumber: string, deviceId = gene
     body: JSON.stringify({
       phone_number: normalizedPhoneNumber,
       target: 'ANY',
-      client_id: GUANGYA_CLIENT_ID
+      client_id: getSecret('GUANGYA_CLIENT_ID')
     })
   })
   const send = await readJson(sendResp)
@@ -138,7 +138,7 @@ export const submitGuangyaSmsCode = async (state: GuangyaSmsState, verificationC
     body: JSON.stringify({
       verification_id: state.verificationId,
       verification_code: verificationCode,
-      client_id: GUANGYA_CLIENT_ID
+      client_id: getSecret('GUANGYA_CLIENT_ID')
     })
   })
   const verify = await readJson(verifyResp)
@@ -155,7 +155,7 @@ export const submitGuangyaSmsCode = async (state: GuangyaSmsState, verificationC
       verification_code: verificationCode,
       verification_token: verificationToken,
       username: state.phoneNumber,
-      client_id: GUANGYA_CLIENT_ID
+      client_id: getSecret('GUANGYA_CLIENT_ID')
     })
   })
   const signin = await readJson(signinResp)
@@ -206,7 +206,7 @@ export const refreshGuangyaAccessToken = async (token: ITokenInfo): Promise<ITok
         'x-action': '401'
       },
       body: JSON.stringify({
-        client_id: GUANGYA_CLIENT_ID,
+        client_id: getSecret('GUANGYA_CLIENT_ID'),
         grant_type: 'refresh_token',
         refresh_token: token.refresh_token
       })

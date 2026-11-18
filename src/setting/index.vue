@@ -12,12 +12,12 @@ import SettingAccount from './SettingAccount.vue'
 import SettingDown from './SettingDown.vue'
 import SettingDebug from './SettingDebug.vue'
 import SettingUpload from './SettingUpload.vue'
-import SettingAria from './SettingAria.vue'
 import SettingLog from './SettingLog.vue'
 import SettingProxy from './SettingProxy.vue'
 import SettingSecurity from './SettingSecurity.vue'
 import SettingDownloadAdvanced from './SettingDownloadAdvanced.vue'
 import SettingAPI from './SettingAPI.vue'
+import SettingSecrets from './SettingSecrets.vue'
 import { t } from '../i18n'
 import { ExternalLink, Layers } from 'lucide-vue-next'
 import { openExternal } from '../utils/electronhelper'
@@ -94,6 +94,7 @@ const sectionMeta: Record<string, { title: string }> = {
   SettingUI: { title: 'settings.app' },
   SettingAccount: { title: 'settings.account' },
   SettingAPI: { title: 'settings.ai' },
+  SettingSecrets: { title: '接入配置' },
   SettingSecurity: { title: 'settings.security' },
   SettingPlay: { title: 'settings.player' },
   SettingGeneral: { title: 'general.generalTitlePage' },
@@ -106,7 +107,6 @@ const sectionMeta: Record<string, { title: string }> = {
   SettingUpload: { title: 'settings.upload' },
   SettingDebug: { title: 'settings.advanced' },
   SettingProxy: { title: 'settings.proxy' },
-  SettingAria: { title: 'settings.remoteAria' },
   SettingLog: { title: 'settings.logs' }
 }
 
@@ -146,6 +146,10 @@ onUnmounted(() => {
         <a-menu-item key="SettingAPI" data-testid="settings-ai-menu">
           <template #icon><IconFont name="iconlock" /></template>
           {{ t('settings.ai') }}
+        </a-menu-item>
+        <a-menu-item key="SettingSecrets">
+          <template #icon><IconFont name="iconsetting" /></template>
+          接入配置
         </a-menu-item>
         <a-menu-item key="SettingSecurity" data-testid="settings-security-menu">
           <template #icon><IconFont name="iconchrome" /></template>
@@ -198,10 +202,6 @@ onUnmounted(() => {
           <template #icon><IconFont name="iconyuanduanfuzhi" /></template>
           {{ t('settings.proxy') }}
         </a-menu-item>
-        <a-menu-item key="SettingAria">
-          <template #icon><IconFont name="iconchuanshu" /></template>
-          {{ t('settings.remoteAria') }}
-        </a-menu-item>
         <a-menu-item key="SettingLog">
           <template #icon><IconFont name="icondebug" /></template>
           {{ t('settings.logs') }}
@@ -236,6 +236,7 @@ onUnmounted(() => {
         <section v-show="activeSettingsPage === 'SettingUI'" id="SettingUI" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingUI.title as Parameters<typeof t>[0]) }}</h2></div><SettingUI /></section>
         <section v-show="activeSettingsPage === 'SettingAccount'" id="SettingAccount" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingAccount.title as Parameters<typeof t>[0]) }}</h2></div><SettingAccount /></section>
         <section v-show="activeSettingsPage === 'SettingAPI'" id="SettingAPI" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingAPI.title as Parameters<typeof t>[0]) }}</h2></div><SettingAPI /></section>
+        <section v-show="activeSettingsPage === 'SettingSecrets'" id="SettingSecrets" class="settings-section"><div class="settings-section-header"><h2>接入配置</h2></div><SettingSecrets /></section>
         <section v-show="activeSettingsPage === 'SettingSecurity'" id="SettingSecurity" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingSecurity.title as Parameters<typeof t>[0]) }}</h2></div><SettingSecurity /></section>
         <section v-show="activeSettingsPage === 'SettingPlay'" id="SettingPlay" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingPlay.title as Parameters<typeof t>[0]) }}</h2></div><SettingPlay /></section>
         <section v-show="activeSettingsPage === 'SettingGeneral'" id="SettingGeneral" class="settings-section"><div class="settings-section-header"><h2>{{ t('general.generalTitlePage') }}</h2></div><SettingGeneral /></section>
@@ -248,7 +249,6 @@ onUnmounted(() => {
         <section v-show="activeSettingsPage === 'SettingUpload'" id="SettingUpload" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingUpload.title as Parameters<typeof t>[0]) }}</h2></div><SettingUpload /></section>
         <section v-show="activeSettingsPage === 'SettingDebug'" id="SettingDebug" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingDebug.title as Parameters<typeof t>[0]) }}</h2></div><SettingDebug /></section>
         <section v-show="activeSettingsPage === 'SettingProxy'" id="SettingProxy" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingProxy.title as Parameters<typeof t>[0]) }}</h2></div><SettingProxy /></section>
-        <section v-show="activeSettingsPage === 'SettingAria'" id="SettingAria" class="settings-section"><div class="settings-section-header"><h2>{{ t(sectionMeta.SettingAria.title as Parameters<typeof t>[0]) }}</h2></div><SettingAria /></section>
         <section v-show="activeSettingsPage === 'SettingLog'" id="SettingLog" class="settings-section">
           <div class="settings-section-header"><h2>{{ t(sectionMeta.SettingLog.title as Parameters<typeof t>[0]) }}</h2></div>
           <div v-if="hideSetting" style="min-height: 602px"></div>

@@ -1,7 +1,7 @@
 import { ITokenInfo } from '../user/userstore'
 import UserDAL from '../user/userdal'
 import message from './message'
-import { CLOUD123_APP_ID, CLOUD123_APP_SECRET } from '../secrets.generated'
+import { getSecret } from './secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
 const CLOUD123_AUTH_URL = 'https://yun.123pan.com/auth'
@@ -49,7 +49,7 @@ const hashString = (value: string): string => {
 
 export const buildCloud123AuthUrl = () => {
   const params = new URLSearchParams({
-    client_id: CLOUD123_APP_ID,
+    client_id: getSecret('CLOUD123_APP_ID'),
     redirect_uri: CLOUD123_REDIRECT_URL,
     scope: CLOUD123_SCOPE,
     response_type: 'code',
@@ -123,8 +123,8 @@ const fetchCloud123UserInfo = async (accessToken: string) => {
 
 export const exchangeCloud123CodeForToken = async (code: string): Promise<ITokenInfo | null> => {
   const body = new URLSearchParams({
-    client_id: CLOUD123_APP_ID,
-    client_secret: CLOUD123_APP_SECRET,
+    client_id: getSecret('CLOUD123_APP_ID'),
+    client_secret: getSecret('CLOUD123_APP_SECRET'),
     code,
     grant_type: 'authorization_code',
     redirect_uri: CLOUD123_REDIRECT_URL
@@ -174,8 +174,8 @@ export const exchangeCloud123CodeForToken = async (code: string): Promise<IToken
 
 const refreshCloud123AccessTokenInternal = async (refreshToken: string): Promise<ITokenInfo | null> => {
   const body = new URLSearchParams({
-    client_id: CLOUD123_APP_ID,
-    client_secret: CLOUD123_APP_SECRET,
+    client_id: getSecret('CLOUD123_APP_ID'),
+    client_secret: getSecret('CLOUD123_APP_SECRET'),
     refresh_token: refreshToken,
     grant_type: 'refresh_token'
   })

@@ -27,7 +27,7 @@ import { ONEDRIVE_CLIENT_ID, buildOneDriveAuthUrl, createOneDrivePkceVerifier, e
 import { BOX_CLIENT_ID, buildBoxAuthUrl, createBoxPkceVerifier, exchangeBoxCodeForToken } from '../box/auth'
 import { GOOGLE_CLIENT_ID, buildGoogleAuthUrl, createGooglePkceVerifier, exchangeGoogleCodeForToken } from '../google/auth'
 import { getDriveProviderMeta } from '../utils/driveProvider'
-import { ALIYUN_APP_ID, ALIYUN_APP_SECRET, GOOGLE_CLIENT_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { t } from '../i18n'
 import { createAListConnection, createWebDavConnection, saveWebDavConnection, testWebDavConnection } from '../utils/webdavClient'
 import { createRemoteDriveAccount } from '../utils/remoteDriveAccount'
@@ -64,8 +64,8 @@ const loginCur = ref(1)
 const loginToken = ref<ITokenInfo>()
 const loginStatus = ref<'wait' | 'error' | 'finish' | 'process'>('process')
 const loginLoading = ref(true)
-const client_id = ref(ALIYUN_APP_ID)
-const client_secret = ref(ALIYUN_APP_SECRET)
+const client_id = ref(getSecret('ALIYUN_APP_ID'))
+const client_secret = ref(getSecret('ALIYUN_APP_SECRET'))
 
 const intervalId = ref()
 const qrCodeUrl = ref('')
@@ -438,8 +438,8 @@ const handleClose = () => {
   if (!props.embedded) useUser.loginFromFileSources = false
   aliyunWebviewInitialized = false
   loginLoading.value = true
-  client_id.value = ALIYUN_APP_ID
-  client_secret.value = ALIYUN_APP_SECRET
+  client_id.value = getSecret('ALIYUN_APP_ID')
+  client_secret.value = getSecret('ALIYUN_APP_SECRET')
   clearInterval(intervalId.value)
   clearOpenTimers()
   drive115Session++
@@ -619,7 +619,7 @@ const handleOpenGoogle = async () => {
     message.warning('请先配置 GOOGLE_CLIENT_ID')
     return
   }
-  if (!GOOGLE_CLIENT_SECRET.trim()) {
+  if (!getSecret('GOOGLE_CLIENT_SECRET').trim()) {
     message.warning('请先配置 GOOGLE_CLIENT_SECRET')
     return
   }
@@ -1198,8 +1198,8 @@ const loginStepFirst = async (msg: string) => {
         client_id.value = settingStore.uiOpenApiClientId.trim()
         client_secret.value = settingStore.uiOpenApiClientSecret.trim()
       } else {
-        client_id.value = ALIYUN_APP_ID
-        client_secret.value = ALIYUN_APP_SECRET
+        client_id.value = getSecret('ALIYUN_APP_ID')
+        client_secret.value = getSecret('ALIYUN_APP_SECRET')
       }
       refreshStepTips('process', 2)
       loginStepSecond(token)
@@ -1313,8 +1313,8 @@ const handlerChangeType = () => {
       }
     })
   } else {
-    client_id.value = ALIYUN_APP_ID
-    client_secret.value = ALIYUN_APP_SECRET
+    client_id.value = getSecret('ALIYUN_APP_ID')
+    client_secret.value = getSecret('ALIYUN_APP_SECRET')
     handleRefreshQrCodeUrl()
   }
 }

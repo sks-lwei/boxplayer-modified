@@ -1,10 +1,11 @@
 import type { ITokenInfo } from '../user/userstore'
 import { humanSize } from '../utils/format'
 import message from '../utils/message'
-import { DROPBOX_APP_KEY, DROPBOX_APP_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { DROPBOX_APP_KEY, DROPBOX_APP_SECRET }
+export const DROPBOX_APP_KEY = getSecret('DROPBOX_APP_KEY')
+export const DROPBOX_APP_SECRET = getSecret('DROPBOX_APP_SECRET')
 
 const DROPBOX_AUTH_URL = 'https://www.dropbox.com/oauth2/authorize'
 const DROPBOX_TOKEN_URL = 'https://api.dropboxapi.com/oauth2/token'
@@ -168,7 +169,7 @@ export const exchangeDropboxCodeForToken = async (code: string, appKey: string, 
     redirect_uri: DROPBOX_REDIRECT_URL,
     code_verifier: verifier
   })
-  if (DROPBOX_APP_SECRET.trim()) body.set('client_secret', DROPBOX_APP_SECRET.trim())
+  if (getSecret('DROPBOX_APP_SECRET').trim()) body.set('client_secret', getSecret('DROPBOX_APP_SECRET').trim())
   const data = await dropboxJson<any>(DROPBOX_TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -193,7 +194,7 @@ export const refreshDropboxAccessToken = async (token: ITokenInfo): Promise<ITok
       refresh_token: token.refresh_token,
       client_id: appKey
     })
-    if (DROPBOX_APP_SECRET.trim()) body.set('client_secret', DROPBOX_APP_SECRET.trim())
+    if (getSecret('DROPBOX_APP_SECRET').trim()) body.set('client_secret', getSecret('DROPBOX_APP_SECRET').trim())
     const data = await dropboxJson<any>(DROPBOX_TOKEN_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

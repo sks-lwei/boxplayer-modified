@@ -1,7 +1,7 @@
 import { generalPreferences } from '../utils/seriesVersionPreferences'
 import posthog from 'posthog-js'
 import axios from '../axios'
-import { POSTHOG_HOST, POSTHOG_PROJECT_API_KEY } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { useSettingStore } from '../store'
 
 declare const __APP_VERSION__: string
@@ -104,12 +104,12 @@ const getInstallId = () => {
   return id
 }
 
-export const isAnalyticsConfigured = () => Boolean(POSTHOG_PROJECT_API_KEY && POSTHOG_HOST)
+export const isAnalyticsConfigured = () => Boolean(getSecret('POSTHOG_PROJECT_API_KEY') && getSecret('POSTHOG_HOST'))
 
 export const startAnalytics = () => {
   if (initialized || !isAnalyticsConfigured()) return
-  posthog.init(POSTHOG_PROJECT_API_KEY, {
-    api_host: POSTHOG_HOST,
+  posthog.init(getSecret('POSTHOG_PROJECT_API_KEY'), {
+    api_host: getSecret('POSTHOG_HOST'),
     autocapture: false,
     capture_pageview: false,
     capture_pageleave: false,

@@ -253,6 +253,9 @@ export interface SettingState {
   mediaAcquisitionTargetDriveId: string
   mediaAcquisitionTargetFolderId: string
   mediaAcquisitionTargetFolderName: string
+
+  // 运行时接入配置 —— 用户在设置页面填写的各平台 ClientID/Secret 等
+  runtimeSecrets: Record<string, string>
 }
 
 const setting: SettingState = {
@@ -487,7 +490,10 @@ const setting: SettingState = {
   mediaAcquisitionTargetUserId: '',
   mediaAcquisitionTargetDriveId: '',
   mediaAcquisitionTargetFolderId: '',
-  mediaAcquisitionTargetFolderName: ''
+  mediaAcquisitionTargetFolderName: '',
+
+  // 运行时接入配置
+  runtimeSecrets: {}
 }
 
 function _loadSetting(val: any) {
@@ -738,6 +744,17 @@ function _loadSetting(val: any) {
   setting.mediaAcquisitionTargetDriveId = defaultString(val.mediaAcquisitionTargetDriveId, '')
   setting.mediaAcquisitionTargetFolderId = defaultString(val.mediaAcquisitionTargetFolderId, '')
   setting.mediaAcquisitionTargetFolderName = defaultString(val.mediaAcquisitionTargetFolderName, '')
+
+  // 运行时接入配置 —— 兼容旧版无该字段的 setting.config
+  if (val.runtimeSecrets && typeof val.runtimeSecrets === 'object' && !Array.isArray(val.runtimeSecrets)) {
+    const cleaned: Record<string, string> = {}
+    for (const [k, v] of Object.entries(val.runtimeSecrets)) {
+      if (typeof v === 'string') cleaned[k] = v
+    }
+    setting.runtimeSecrets = cleaned
+  } else {
+    setting.runtimeSecrets = {}
+  }
 }
 
 let settingstr = ''

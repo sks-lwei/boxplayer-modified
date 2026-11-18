@@ -1,9 +1,9 @@
 import type { ITokenInfo } from '../user/userstore'
 import message from '../utils/message'
-import { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { GOOGLE_CLIENT_ID }
+export const GOOGLE_CLIENT_ID = getSecret('GOOGLE_CLIENT_ID')
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token'
@@ -94,7 +94,7 @@ const applyTokenResponse = (data: any, clientId: string, previous?: ITokenInfo) 
 }
 
 export const exchangeGoogleCodeForToken = async (code: string, clientId: string, verifier: string, redirectUri: string) => {
-  const data = await googleTokenRequest(new URLSearchParams({ grant_type: 'authorization_code', code, client_id: clientId.trim(), client_secret: GOOGLE_CLIENT_SECRET.trim(), redirect_uri: redirectUri, code_verifier: verifier }), '获取 Google Drive access_token 失败')
+  const data = await googleTokenRequest(new URLSearchParams({ grant_type: 'authorization_code', code, client_id: clientId.trim(), client_secret: getSecret('GOOGLE_CLIENT_SECRET').trim(), redirect_uri: redirectUri, code_verifier: verifier }), '获取 Google Drive access_token 失败')
   if (!data) return null
   const token = applyTokenResponse(data, clientId)
   await applyGoogleAccount(token)
@@ -105,8 +105,8 @@ export const exchangeGoogleCodeForToken = async (code: string, clientId: string,
 }
 
 export const refreshGoogleAccessToken = async (token: ITokenInfo) => withTokenRefreshLock(tokenRefreshKey('google', token.user_id || token.refresh_token), async () => {
-  if (!token.refresh_token || !token.device_id || !GOOGLE_CLIENT_SECRET.trim()) return null
-  const data = await googleTokenRequest(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: token.refresh_token, client_id: token.device_id, client_secret: GOOGLE_CLIENT_SECRET.trim() }), '刷新 Google Drive access_token 失败')
+  if (!token.refresh_token || !token.device_id || !getSecret('GOOGLE_CLIENT_SECRET').trim()) return null
+  const data = await googleTokenRequest(new URLSearchParams({ grant_type: 'refresh_token', refresh_token: token.refresh_token, client_id: token.device_id, client_secret: getSecret('GOOGLE_CLIENT_SECRET').trim() }), '刷新 Google Drive access_token 失败')
   if (!data) return null
   const refreshed = applyTokenResponse(data, token.device_id, token)
   await applyGoogleAccount(refreshed)

@@ -308,10 +308,11 @@ export default class launch extends EventEmitter {
           this.pendingOAuthUrl = null
         }
         if (process.env.BOXPLAYER_E2E !== '1') {
-          setTimeout(() => {
-            this.motrixApp = new MotrixApplication()
-            this.motrixApp.init().catch((err: any) => console.error('[MotrixApp] init failed', err))
-          }, 3000)
+          // aria2/Motrix 功能已移除，以下引擎初始化禁用
+          // setTimeout(() => {
+          //   this.motrixApp = new MotrixApplication()
+          //   this.motrixApp.init().catch((err: any) => console.error('[MotrixApp] init failed', err))
+          // }, 3000)
           const defaultSessionExtensions = session.defaultSession.extensions
           const loadCrxExtension = defaultSessionExtensions?.loadExtension ? defaultSessionExtensions.loadExtension.bind(defaultSessionExtensions) : session.defaultSession.loadExtension.bind(session.defaultSession)
           loadCrxExtension(getStaticPath('crx'), { allowFileAccess: true })

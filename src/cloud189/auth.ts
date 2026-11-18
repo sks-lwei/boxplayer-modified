@@ -2,10 +2,10 @@ import { HmacSHA1 } from 'crypto-js'
 import crypto from 'crypto'
 import { CLOUD189_DATE_TRANSPORT_HEADER } from '@shared/cloud189RequestHeaders'
 import type { ITokenInfo } from '../user/userstore'
-import { CLOUD189_APP_ID } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { CLOUD189_APP_ID }
+export const CLOUD189_APP_ID = getSecret('CLOUD189_APP_ID')
 
 export const CLOUD189_WEB_URL = 'https://cloud.189.cn'
 export const CLOUD189_AUTH_URL = 'https://open.e.189.cn'
@@ -83,7 +83,7 @@ const extract = (html: string, pattern: RegExp, name: string) => {
 
 export const requestCloud189QrCode = async (): Promise<Cloud189QrState> => {
   const baseParams = new URLSearchParams({
-    appId: CLOUD189_APP_ID,
+    appId: getSecret('CLOUD189_APP_ID'),
     clientType: CLOUD189_CLIENT_TYPE,
     returnURL: CLOUD189_RETURN_URL,
     timeStamp: String(Date.now())
@@ -104,7 +104,7 @@ export const requestCloud189QrCode = async (): Promise<Cloud189QrState> => {
       'Content-Type': 'application/x-www-form-urlencoded',
       'User-Agent': CLOUD189_USER_AGENT
     },
-    body: new URLSearchParams({ appId: CLOUD189_APP_ID })
+    body: new URLSearchParams({ appId: getSecret('CLOUD189_APP_ID') })
   })
   const data = await uuidResp.json().catch(() => undefined)
   if (!uuidResp.ok || !data?.uuid || !data?.encryuuid) throw new Error('获取天翼云盘二维码失败')
@@ -116,7 +116,7 @@ export const pollCloud189QrLogin = async (state: Cloud189QrState): Promise<{ sta
   const now = new Date()
   const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}.${String(now.getMilliseconds()).padStart(3, '0')}`
   const form = new URLSearchParams({
-    appId: CLOUD189_APP_ID,
+    appId: getSecret('CLOUD189_APP_ID'),
     clientType: CLOUD189_CLIENT_TYPE,
     returnUrl: CLOUD189_RETURN_URL,
     paramId: state.paramId,
@@ -214,7 +214,7 @@ export const refreshCloud189Token = async (token: ITokenInfo): Promise<ITokenInf
   return withTokenRefreshLock(key, async () => {
     if (!token.refresh_token) return null
     const form = new URLSearchParams({
-      clientId: CLOUD189_APP_ID,
+      clientId: getSecret('CLOUD189_APP_ID'),
       refreshToken: token.refresh_token,
       grantType: 'refresh_token',
       format: 'json'
@@ -227,7 +227,7 @@ export const refreshCloud189Token = async (token: ITokenInfo): Promise<ITokenInf
     })
     const data = await resp.json().catch(() => undefined)
     if (!resp.ok || !data?.accessToken) return null
-    const params = new URLSearchParams({ ...cloud189ClientSuffix(), appId: CLOUD189_APP_ID, accessToken: data.accessToken })
+    const params = new URLSearchParams({ ...cloud189ClientSuffix(), appId: getSecret('CLOUD189_APP_ID'), accessToken: data.accessToken })
     const sessionResp = await fetch(`${CLOUD189_API_URL}/getSessionForPC.action?${params.toString()}`, {
       signal: AbortSignal.timeout(30000),
       headers: { Accept: 'application/json;charset=UTF-8', 'User-Agent': CLOUD189_USER_AGENT }

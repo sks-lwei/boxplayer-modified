@@ -1,7 +1,7 @@
 import { MD5 } from 'crypto-js'
 import type { ITokenInfo } from '../user/userstore'
 import { humanSize } from '../utils/format'
-import { PIKPAK_CLIENT_ID, PIKPAK_CLIENT_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
 const PIKPAK_API_HOST = 'https://api-drive.mypikpak.com'
@@ -37,7 +37,7 @@ type PikPakAuthResp = {
 }
 
 export const captchaSign = (deviceId: string, timestamp: string): string => {
-  let sign = PIKPAK_CLIENT_ID + CLIENT_VERSION + PACKAGE_NAME + deviceId + timestamp
+  let sign = getSecret('PIKPAK_CLIENT_ID') + CLIENT_VERSION + PACKAGE_NAME + deviceId + timestamp
   for (const salt of CAPTCHA_SALTS) {
     sign = MD5(sign + salt).toString()
   }
@@ -136,7 +136,7 @@ export const loginPikPak = async (username: string, password: string): Promise<I
     method: 'POST',
     headers: buildHeaders(deviceId),
     body: JSON.stringify({
-      client_id: PIKPAK_CLIENT_ID,
+      client_id: getSecret('PIKPAK_CLIENT_ID'),
       action: `POST:${loginUrl}`,
       device_id: deviceId,
       meta
@@ -151,8 +151,8 @@ export const loginPikPak = async (username: string, password: string): Promise<I
       'X-Captcha-Token': captcha.captcha_token
     },
     body: JSON.stringify({
-      client_id: PIKPAK_CLIENT_ID,
-      client_secret: PIKPAK_CLIENT_SECRET,
+      client_id: getSecret('PIKPAK_CLIENT_ID'),
+      client_secret: getSecret('PIKPAK_CLIENT_SECRET'),
       password,
       username,
       captcha_token: captcha.captcha_token
@@ -181,7 +181,7 @@ export const refreshPikPakAccessToken = async (token: ITokenInfo): Promise<IToke
       method: 'POST',
       headers: buildHeaders(token.device_id),
       body: JSON.stringify({
-        client_id: PIKPAK_CLIENT_ID,
+        client_id: getSecret('PIKPAK_CLIENT_ID'),
         refresh_token: token.refresh_token,
         grant_type: 'refresh_token'
       })

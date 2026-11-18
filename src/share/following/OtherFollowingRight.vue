@@ -237,11 +237,11 @@ const handleFollowing = (followingid: string, isFollowing: boolean) => {
 }
 
 .tuijianmenu .arco-tag.arco-tag-checkable.arco-tag-arcoblue {
-  color: rgb(var(--arcoblue-6));
-  background-color: rgb(var(--arcoblue-1));
+  color: var(--color-primary-6);
+  background-color: var(--color-primary-1);
 }
 .tuijianmenu .arco-tag.arco-tag-checkable.arco-tag-checked.arco-tag-arcoblue {
-  background-color: rgb(var(--arcoblue-2));
+  background-color: var(--color-primary-2);
 }
 
 .tuijianmenu .arco-tag.arco-tag-checkable.arco-tag-orangered {

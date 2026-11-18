@@ -1,10 +1,11 @@
 import type { ITokenInfo } from '../user/userstore'
 import { humanSize } from '../utils/format'
 import message from '../utils/message'
-import { ONEDRIVE_CLIENT_ID, ONEDRIVE_CLIENT_SECRET } from '../secrets.generated'
+import { getSecret } from '../utils/secrets'
 import { tokenRefreshKey, withTokenRefreshLock } from '../user/tokenRefresh'
 
-export { ONEDRIVE_CLIENT_ID, ONEDRIVE_CLIENT_SECRET }
+export const ONEDRIVE_CLIENT_ID = getSecret('ONEDRIVE_CLIENT_ID')
+export const ONEDRIVE_CLIENT_SECRET = getSecret('ONEDRIVE_CLIENT_SECRET')
 
 const ONEDRIVE_AUTH_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize'
 const ONEDRIVE_TOKEN_URL = 'https://login.microsoftonline.com/common/oauth2/v2.0/token'
@@ -176,7 +177,7 @@ export const exchangeOneDriveCodeForToken = async (code: string, clientId: strin
 export const refreshOneDriveAccessToken = async (token: ITokenInfo): Promise<ITokenInfo | null> => {
   const key = tokenRefreshKey('onedrive', token.user_id || token.device_id || token.refresh_token)
   return withTokenRefreshLock(key, async () => {
-    const clientId = token.device_id || ONEDRIVE_CLIENT_ID
+    const clientId = token.device_id || getSecret('ONEDRIVE_CLIENT_ID')
     if (!clientId || !token.refresh_token) return null
     const body = new URLSearchParams({
       client_id: clientId.trim(),
